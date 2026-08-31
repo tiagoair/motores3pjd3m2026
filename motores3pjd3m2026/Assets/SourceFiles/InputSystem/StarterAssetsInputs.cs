@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -20,6 +21,25 @@ namespace StarterAssets
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 
+
+		[SerializeField] private PlayerInput _playerInput;
+		
+		
+		private void OnEnable()
+		{
+			_playerInput.actions.FindAction("Move").performed += context => move = context.ReadValue<Vector2>();
+			_playerInput.actions.FindAction("Move").canceled += context => move = Vector2.zero;
+			
+			_playerInput.actions.FindAction("Look").performed += context => look = context.ReadValue<Vector2>();
+			_playerInput.actions.FindAction("Look").canceled += context => look = Vector2.zero;
+			
+			_playerInput.actions.FindAction("Jump").performed += context => jump = true;
+			
+			_playerInput.actions.FindAction("Sprint").performed += context => sprint = true;
+			_playerInput.actions.FindAction("Sprint").canceled += context => sprint = false;
+			
+			_playerInput.actions.FindAction("Interact").performed += context => InteractOM.Interact();
+		}
 
 
 #if ENABLE_INPUT_SYSTEM
@@ -47,6 +67,11 @@ namespace StarterAssets
 		public void OnSprint(InputValue value)
 		{
 			SprintInput(value.isPressed);
+		}
+		
+		public void OnInteract(InputValue value)
+		{
+			if(value.isPressed) InteractOM.Interact();
 		}
 #endif
 
